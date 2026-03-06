@@ -203,3 +203,20 @@ prediction = model.predict(input_df)
 
 with col4:
     st.metric("Predicted Life Expectancy", f"{prediction[0]:.1f} years")
+
+
+st.subheader("Feature Importance")
+
+importance_df = pd.DataFrame({
+    "Feature": ["GDP per capita", "Poverty Rate", "Year"],
+    "Importance": model.feature_importances_
+}).sort_values("Importance", ascending=True)
+
+fig_importance = px.bar(
+    importance_df,
+    x="Importance",
+    y="Feature",
+    orientation="h",
+    title="Feature Importance"
+)
+st.plotly_chart(fig_importance, use_container_width=False)
