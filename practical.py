@@ -153,23 +153,44 @@ st.subheader("Predict Life Expectancy")
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
+    gdp_input_min = 500.0
+    gdp_input_max = 150000.0
+
     gdp_input = st.number_input(
         "GDP per capita",
+        min_value=gdp_input_min,
+        max_value=gdp_input_max,
+        value=45000.0,
         key="gdp_input"
     )
+    st.caption(f"Range: {gdp_input_min} – {gdp_input_max}")
 
 with col2:
+    poverty_input_min = 0.0
+    poverty_input_max = 100.0
+
     poverty_input = st.number_input(
         "Poverty Rate (%)",
+        min_value=poverty_input_min,
+        max_value=poverty_input_max,
+        value=20.0,
         key="poverty_input"
     )
+    st.caption(f"Range: {poverty_input_min} – {poverty_input_max}")
 
 with col3:
+    year_min = 1900
+    year_max = 2030
+    
     year_input = st.number_input(
         "Year",
+        min_value=year_min,
+        max_value=year_max,
+        value=2020,
+        step=1,
         key="year_input"
     )
-
+    st.caption(f"Range: {year_min} – {year_max}")
 
 input_df = pd.DataFrame({
     "GDP per capita": [gdp_input],
