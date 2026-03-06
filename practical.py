@@ -72,6 +72,9 @@ with tab1:
         )
 
 
+
+ 
+
 with tab2:
     st.write("Country Deep Dive content goes here")
 
@@ -134,3 +137,48 @@ fig = px.scatter(
 )
 
 st.plotly_chart(fig, use_container_width=True)
+
+
+import joblib
+
+@st.cache_resource
+def load_model():
+    return joblib.load("model.joblib")
+
+model = load_model()
+
+# --- Prediction Section ---
+st.subheader("Predict Life Expectancy")
+
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    gdp_input = st.number_input(
+        "GDP per capita",
+        key="gdp_input"
+    )
+
+with col2:
+    poverty_input = st.number_input(
+        "Poverty Rate (%)",
+        key="poverty_input"
+    )
+
+with col3:
+    year_input = st.number_input(
+        "Year",
+        key="year_input"
+    )
+
+
+input_df = pd.DataFrame({
+    "GDP per capita": [gdp_input],
+    "headcount_ratio_upper_mid_income_povline": [poverty_input],
+    "year": [year_input]
+})
+
+prediction = model.predict(input_df)
+#st.write(prediction)
+
+with col4:
+    st.metric("Predicted Life Expectancy", f"{prediction[0]:.1f} years")
