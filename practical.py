@@ -24,7 +24,53 @@ df = load_data()
 tab1, tab2, tab3 = st.tabs(["Global Overview", "Country Deep Dive", "Data Explorer"])
 
 with tab1:
-    st.write("Global Overview content goes here")
+    st.subheader("Global Overview")
+    
+    # Year slider
+    min_year = int(df["year"].min())
+    max_year = int(df["year"].max())
+    selected_year = st.slider(
+        "Select year:",
+        min_value=min_year,
+        max_value=max_year,
+        value=max_year,
+        key="tab1_year"
+    )
+    
+    # Filter data by selected year
+    year_df = df[df["year"] == selected_year]
+    
+    # Create 4 columns for metrics
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        avg_life_exp = year_df["Life Expectancy (IHME)"].mean()
+        st.metric(
+            label="Mean Life Expectancy",
+            value=f"{avg_life_exp:.1f} years"
+        )
+    
+    with col2:
+        median_gdp = year_df["GDP per capita"].median()
+        st.metric(
+            label="Median GDP per Capita",
+            value=f"${median_gdp:,.0f}"
+        )
+    
+    with col3:
+        avg_poverty = year_df["headcount_ratio_upper_mid_income_povline"].mean()
+        st.metric(
+            label="Mean Poverty Rate",
+            value=f"{avg_poverty:.1f}%"
+        )
+    
+    with col4:
+        num_countries = year_df["country"].nunique()
+        st.metric(
+            label="Number of Countries",
+            value=num_countries
+        )
+
 
 with tab2:
     st.write("Country Deep Dive content goes here")
@@ -66,3 +112,25 @@ with tab3:
         file_name="filtered_data.csv",
         mime="text/csv"
     )
+
+
+import plotly.express as px
+
+fig = px.scatter(
+    data_frame=df,
+    x="GDP per capita",
+    y="Life Expectancy (IHME)",
+    hover_name="country",
+    log_x=True,
+    size="Population",
+    color = "headcount_ratio_upper_mid_income_povline",
+    title="Life Expectancy vs GDP per Capita",
+    labels={
+    "GDP per capita": "GDP per Capita (USD)",
+    "Life Expectancy (IHME)": "Life Expectancy (Years)",
+    "headcount_ratio_upper_mid_income_povline": "Poverty Rate (%)",
+    "Population": "Population"
+}
+)
+
+st.plotly_chart(fig, use_container_width=True)
